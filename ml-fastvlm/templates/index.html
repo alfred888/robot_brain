@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>摄像头实时预览</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .video-container {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .video-feed {
+            width: 100%;
+            border-radius: 5px;
+        }
+        .description-box {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            min-height: 100px;
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+            margin-top: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>实时摄像头预览</h1>
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" class="video-feed">
+        </div>
+        <div class="description-box" id="description">
+            <span class="loading">等待拍摄第一张照片...</span>
+        </div>
+    </div>
+
+    <script>
+        function updateDescription() {
+            fetch('/get_description')
+                .then(response => response.json())
+                .then(data => {
+                    const descriptionElement = document.getElementById('description');
+                    if (data.description) {
+                        descriptionElement.innerHTML = data.description;
+                    }
+                })
+                .catch(error => {
+                    console.error('获取描述失败:', error);
+                });
+        }
+
+        // 页面加载完成后立即更新一次
+        updateDescription();
+        
+        // 每3秒更新一次描述
+        setInterval(updateDescription, 3000);
+    </script>
+</body>
+</html> 
